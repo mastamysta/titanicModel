@@ -51,10 +51,10 @@ def cleanData(trainData):
         if math.isnan(ageNorm[i]):
             ageNorm[i] = ageMean
             
-    cabinNorm = [0] * Len
     
     
     #fidning classes of cabins
+    cabinNorm = [0] * Len
     for i in range(Len):
         if isinstance(trainData["Cabin"][i], str):
             if trainData["Cabin"][i][0] == "A":
@@ -77,6 +77,21 @@ def cleanData(trainData):
             if math.isnan(trainData["Cabin"][i]):
                 cabinNorm[i] = 8
                 
+    #eliminating NaN fare values
+    sumFare = 0
+    count = 0
+    fareNorm = [0] * Len
+    for i in range(Len):
+        if not math.isnan(trainData["Fare"][i]):
+            count += 1
+            sumFare += trainData["Fare"][i]
+    meanFare = sumFare / count
+    for i in range(Len):
+        if math.isnan(trainData["Fare"][i]):
+            fareNorm[i] = meanFare
+        else:
+            fareNorm[i] = trainData["Fare"][i]
+                
     #normalise embarked values
     embarkedNorm = [0] * Len
     for i in range(Len):
@@ -98,7 +113,7 @@ def cleanData(trainData):
     X["Parch"] = trainData["Parch"]
     #WILL RETURN TO TICKET NUMBERS
     #X["Ticket"] = trainData["Ticket"]
-    X["Fare"] = trainData["Fare"]
+    X["Fare"] = fareNorm
     X["Cabin"] = cabinNorm
     X["Embarked"] = embarkedNorm
     
@@ -115,4 +130,17 @@ testData = pd.read_csv("/home/ben/Programming/Python/titanicML/data/test.csv")
 testFeatures = testData.columns[1:]
 
 testX = cleanData(testData)
-print(model.predict(testX.head()))
+prediction = model.predict(testX)
+survivorcount = 0
+for i in range(len(prediction)):
+    if prediction[i] >= 0.5:
+        prediction[i] = 1
+        survivorcount += 1
+    else:
+        prediction[i] = 0
+print(survivorcount / len(prediction))
+
+csv = pd.DataFrame()
+csv["Survived"] = prediction
+print(csv)
+csv.to_csv("/home/ben/Programming/Python/titanicML/data/prediction.csv")
