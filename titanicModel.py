@@ -134,14 +134,14 @@ prediction = model.predict(testX)
 survivorcount = 0
 for i in range(len(prediction)):
     if prediction[i] >= 0.5:
-        prediction[i] = 1
+        prediction[i] = int(1)
         survivorcount += 1
     else:
-        prediction[i] = 0
+        prediction[i] = int(0)
 print(survivorcount / len(prediction))
 
 csv = pd.DataFrame()
 csv["PassengerId"] = range(892,1310)
 csv["Survived"] = prediction
 print(csv)
-csv.to_csv("/home/ben/Programming/Python/titanicML/data/prediction.csv")
+csv.to_csv("/home/ben/Programming/Python/titanicML/data/prediction.csv", index_label=False, index=False)
