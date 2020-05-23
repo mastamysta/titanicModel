@@ -141,6 +141,7 @@ for i in range(len(prediction)):
 print(survivorcount / len(prediction))
 
 csv = pd.DataFrame()
+csv["PassengerId"] = range(892,1310)
 csv["Survived"] = prediction
 print(csv)
 csv.to_csv("/home/ben/Programming/Python/titanicML/data/prediction.csv")
